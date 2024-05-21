@@ -10,7 +10,7 @@ from lagent.agents.internlm2_agent import INTERPRETER_CN, META_CN, PLUGIN_CN, In
 from lagent.llms.lmdepoly_wrapper import LMDeployClient
 from lagent.llms.meta_template import INTERNLM2_META as META
 from lagent.schema import AgentStatusCode
-
+from lagent.actions.memoryBread import MemoryBread
 # from streamlit.logger import get_logger
 
 
@@ -23,6 +23,7 @@ class SessionState:
 
         action_list = [
             ArxivSearch(),
+            MemoryBread()
         ]
         st.session_state['plugin_map'] = {
             action.name: action
