@@ -10,7 +10,13 @@ from lagent.agents.internlm2_agent import INTERPRETER_CN, META_CN, PLUGIN_CN, In
 from lagent.llms.lmdepoly_wrapper import LMDeployClient
 from lagent.llms.meta_template import INTERNLM2_META as META
 from lagent.schema import AgentStatusCode
-from lagent.actions.memoryBread import MemoryBread
+from lagent.actions.memory_bread import MemoryBread
+from lagent.actions.bamboo_copter import BambooCopter
+from lagent.actions.time_machine import TimeMachine
+from lagent.actions.anywhere_door import AnywhereDoor
+from lagent.actions.larger_light import LargerLight
+from lagent.actions.smaller_light import SmallerLight
+from pprint import pprint
 # from streamlit.logger import get_logger
 
 
@@ -22,8 +28,12 @@ class SessionState:
         st.session_state['user'] = []
 
         action_list = [
-            ArxivSearch(),
-            MemoryBread()
+            MemoryBread(),
+            BambooCopter(),
+            TimeMachine(),
+            AnywhereDoor(),
+            LargerLight(),
+            SmallerLight()
         ]
         st.session_state['plugin_map'] = {
             action.name: action
@@ -68,7 +78,7 @@ class StreamlitUI:
         meta_prompt = st.sidebar.text_area('系统提示词', value=META_CN)
         da_prompt = st.sidebar.text_area('数据分析提示词', value=INTERPRETER_CN)
         plugin_prompt = st.sidebar.text_area('插件提示词', value=PLUGIN_CN)
-        model_ip = st.sidebar.text_input('模型IP：', value='10.140.0.220:23333')
+        model_ip = st.sidebar.text_input('模型IP：', value='127.0.0.1:23333')
         if model_name != st.session_state[
                 'model_selected'] or st.session_state['ip'] != model_ip:
             st.session_state['ip'] = model_ip
@@ -163,6 +173,7 @@ class StreamlitUI:
         parameter_dict = dict(name=action_name, parameters=args)
         parameter_str = '```json\n' + json.dumps(
             parameter_dict, indent=4, ensure_ascii=False) + '\n```'
+        pprint(parameter_str)
         st.markdown(parameter_str)
 
     def render_interpreter_args(self, action):
@@ -204,7 +215,7 @@ class StreamlitUI:
                     st.markdown('```\n' + item['content'] + '\n```')
                 elif item['type'] == 'image':
                     image_data = open(item['content'], 'rb').read()
-                    st.image(image_data, caption='Generated Image')
+                    st.image(image_data, caption='Generated Image',width=200)
                 elif item['type'] == 'video':
                     video_data = open(item['content'], 'rb').read()
                     st.video(video_data)
