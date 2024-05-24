@@ -4,7 +4,7 @@ import sys
 from typing import Optional, Type
 from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
-from lagent.schema import ActionReturn
+from lagent.schema import ActionReturn,ActionStatusCode
 from pprint import pprint
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..')))
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..'))
@@ -25,7 +25,7 @@ class MemoryBread(BaseAction):
         self.scene = '通用'
         self.data = {
     "name": "记忆面包",
-    "image_path": "data/tools/content/memory_bread.webp",
+    "image_path": "data/tools/image/memory_bread.webp",
     "use": "只要将记忆面包放在书上，记忆面包就会印上书上的内容，吃了记忆面包后就能记下该页的内容。",
     "limit": "一旦吃下的知识被拉出来(指上大号)，那么吃下的知识便会消失。",
     "other": "",
@@ -51,7 +51,7 @@ class MemoryBread(BaseAction):
         data_list = [f"{MAP[key]}: {value}" for key, value in self.data.items() if key not in ["image_path","reference"] and value]
         tool_return.result = [dict(type='text', content=str('\n'.join(data_list))),
                               dict(type='image', content=str(os.path.join(repo_path,self.data["image_path"])))]
-
+        tool_return.state = ActionStatusCode.SUCCESS
         return tool_return
 
 

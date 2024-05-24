@@ -3,7 +3,7 @@ import sys
 from typing import Optional, Type
 from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
-from lagent.schema import ActionReturn
+from lagent.schema import ActionReturn,ActionStatusCode
 from pprint import pprint
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..')))
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..'))
@@ -23,7 +23,7 @@ class BambooCopter(BaseAction):
         super().__init__(description, parser, enable)
         self.data = {
     "name": "竹蜻蜓",
-    "image_path": "data/tools/content/bamboo_copter.webp",
+    "image_path": "data/tools/image/bamboo_copter.webp",
     "use": "竹蜻蜓的使用方法简单，只需把它戴在头上就可以通过大脑意念随意控制飞行，可任意随使用者想法以任何方向与动作飞行，不需要额外的动力。只要把它放置在身体任何一处，（最常用的是在头顶）就能够以80公里的时速连续在空中飞行8小时（某些情况是4小时），没电时，休息20个小时还可以继续使用。竹蜻蜓不仅可以在空中使用，也可以在水中（即使在高水压的地方）使用。",
     "limit": "在暴风雨中使用会因抵挡不住强风而被吹飞，在极度低温下电池可能会因为冷却而无法正常工作。",
     "other": "哆啦A梦用的竹蜻蜓是黄色，哆啦美用的竹蜻蜓是粉红色。",
@@ -48,7 +48,7 @@ class BambooCopter(BaseAction):
         data_list = [f"{MAP[key]}: {value}" for key, value in self.data.items() if key not in ["image_path","reference"] and value]
         tool_return.result = [dict(type='text', content=str('\n'.join(data_list))),
                               dict(type='image', content=str(os.path.join(repo_path,self.data["image_path"])))]
-       
+        tool_return.state = ActionStatusCode.SUCCESS
         return tool_return
 
 

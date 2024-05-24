@@ -3,7 +3,7 @@ import sys
 from typing import Optional, Type
 from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
-from lagent.schema import ActionReturn
+from lagent.schema import ActionReturn,ActionStatusCode
 from pprint import pprint
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..')))
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..'))
@@ -23,7 +23,7 @@ class AnywhereDoor(BaseAction):
         super().__init__(description, parser, enable)
         self.data = {
     "name": "任意门",
-    "image_path": "data/tools/content/anywhere_door.jpg",
+    "image_path": "data/tools/image/anywhere_door.jpg",
     "use": "使用者握住门把的同时，叙说或脑中想着要去的地方，这样任意门里的计算机便会启动搜索，门另一边就会将两地联结。打开之后就可跨越两地到目的地，但地点必须要“说明正确”才行，不然可能会到奇怪的地方。",
     "limit": "距离限制是10光年；必须在一般时空下才能使用，在其他道具所创造出来的特殊时空中无法使用；只能通向其中的计算机写有该地理数据的地区；怕火烧；在人为武力干预因素下，任意门可能会变形；任意门有一副钥匙，弄丢的话可能会打不开。",
     "other": "大雄有时会用任意门到静香的家玩，但由于静香常洗澡，大雄又没有指定去静香家的哪一间房间，常常弄错，门一开就见到尖叫中的静香对他泼水。",
@@ -51,7 +51,7 @@ class AnywhereDoor(BaseAction):
         data_list = [f"{MAP[key]}: {value}" for key, value in self.data.items() if key not in ["image_path","reference"] and value]
         tool_return.result = [dict(type='text', content=str('\n'.join(data_list))),
                               dict(type='image', content=str(os.path.join(repo_path,self.data["image_path"])))]
-       
+        tool_return.state = ActionStatusCode.SUCCESS
         return tool_return
 
 

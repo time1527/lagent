@@ -3,7 +3,7 @@ import sys
 from typing import Optional, Type
 from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
-from lagent.schema import ActionReturn
+from lagent.schema import ActionReturn,ActionStatusCode
 from pprint import pprint
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..')))
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..'))
@@ -23,7 +23,7 @@ class LargerLight(BaseAction):
         super().__init__(description, parser, enable)
         self.data = {
     "name": "放大灯",
-    "image_path": "data/tools/content/make_larger_light.webp",
+    "image_path": "data/tools/image/make_larger_light.webp",
     "use": "用其光线照射就可以用来放大物体的体积与重量，再照一次便能恢复原状。",
     "limit": "有时间限制，若不持续照射，一段时间后便会恢复原状。",
     "other": "",
@@ -50,7 +50,7 @@ class LargerLight(BaseAction):
         data_list = [f"{MAP[key]}: {value}" for key, value in self.data.items() if key not in ["image_path","reference"] and value]
         tool_return.result = [dict(type='text', content=str('\n'.join(data_list))),
                               dict(type='image', content=str(os.path.join(repo_path,self.data["image_path"])))]
-       
+        tool_return.state = ActionStatusCode.SUCCESS
         return tool_return
 
 

@@ -3,7 +3,7 @@ import sys
 from typing import Optional, Type
 from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
-from lagent.schema import ActionReturn
+from lagent.schema import ActionReturn,ActionStatusCode
 from pprint import pprint
 
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
@@ -42,44 +42,62 @@ class DaXiongINFO(BaseAction):
         Returns:
              ActionReturn: 使用这个工具去回答大雄的相关问题
         """
-        md_path = os.path.join(repo_path,"/data/character/content/daxiong.md")
-        print(md_path)
-        # with open(md_path, encoding='utf8') as f:
-        #     text = f.read()
+        md_path = os.path.join(repo_path,"data/character/content/daxiong.md")
+        with open(md_path, encoding='utf8') as f:
+            text = f.read()
 
-        # head_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=[
-        #     ('#', 'Header 1'),
-        #     ('##', 'Header 2'),
-        #     ('###', 'Header 3'),
-        # ], strip_headers=True)
-        # docs = head_splitter.split_text(text)
-        # loader = TextLoader()
-        # documents = loader.load()
-        # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        # docs = text_splitter.split_documents(documents)
-        # # print(docs[0].page_content)
-        # embedding = HuggingFaceEmbeddings(model_name="/root/share/new_models/maidalun1020/bce-embedding-base_v1")
-        # vectorstore = FAISS.from_documents(documents=docs,embedding=embedding)
-        # content = vectorstore.similarity_search(query=query, k=3)
+        head_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=[
+            ('#', 'Header 1'),
+            ('##', 'Header 2'),
+            ('###', 'Header 3'),
+        ], strip_headers=True)
+        docs = head_splitter.split_text(text)
 
-        # prompt = f"""
-        # 你是非常了解哆啦A梦这部动画片的专家,请你根据下列知识库的内容来回答问题,
-        # 如果无法从中得到答案,请说"抱歉，我暂时不知道如何解答该问题"，不允许在答案中添加编造成分
+        final = []
+        documents = []
+        for doc in docs:
+            header = ''
+            if len(doc.metadata) > 0:
+                if 'Header 1' in doc.metadata:
+                    header += doc.metadata['Header 1']
+                if 'Header 2' in doc.metadata:
+                    header += ' '
+                    header += doc.metadata['Header 2']
+                if 'Header 3' in doc.metadata:
+                    header += ' '
+                    header += doc.metadata['Header 3']
+                final.append('{} {}'.format(
+                    header, doc.page_content.lower()))
 
-        # 以下是知识库:
-        # {docs[0].page_content}
-        # 以上是知识库;
+        for chunk in final:
+            new_doc = Document(page_content=chunk, metadata={
+                'source': md_path
+            })
+            documents.append(new_doc)
 
-        # 用户问题:
-        # {query}
-        # """
-        # print("prompt",prompt)
 
-        # response = self.llm.invoke(prompt)
-        # print("response",response.content)
-        # tool_return = ActionReturn(type=self.name)
-        # tool_return.result = [dict(type='text', content=str(response.content))]
 
+        embedding = HuggingFaceEmbeddings(model_name="/root/share/new_models/maidalun1020/bce-embedding-base_v1")
+        vectorstore = FAISS.from_documents(documents=documents,embedding=embedding)
+        content = vectorstore.similarity_search(query=query, k=3)
+        prompt = f"""
+        你是非常了解哆啦A梦这部动画片的专家,请你根据下列知识库的内容来回答问题,
+        如果无法从中得到答案,请说"抱歉，我暂时不知道如何解答该问题"，不允许在答案中添加编造成分
+
+        以下是知识库:
+        {content[0].page_content}
+        以上是知识库;
+
+        用户问题:
+        {query}
+        """
+        print("prompt",prompt)
+
+        response = self.llm.invoke(prompt)
+        print("response",response.content)
+        tool_return = ActionReturn(type=self.name)
+        tool_return.result = [dict(type='text', content=str(response.content))]
+        tool_return.state = ActionStatusCode.SUCCESS
         return tool_return
 
 
