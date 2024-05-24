@@ -16,6 +16,8 @@ from lagent.actions.time_machine import TimeMachine
 from lagent.actions.anywhere_door import AnywhereDoor
 from lagent.actions.larger_light import LargerLight
 from lagent.actions.smaller_light import SmallerLight
+from lagent.actions.daxiong_info import DaXiongINFO
+
 from pprint import pprint
 # from streamlit.logger import get_logger
 
@@ -28,12 +30,14 @@ class SessionState:
         st.session_state['user'] = []
 
         action_list = [
+            ArxivSearch(),
             MemoryBread(),
             BambooCopter(),
             TimeMachine(),
             AnywhereDoor(),
             LargerLight(),
-            SmallerLight()
+            SmallerLight(),
+            DaXiongINFO()
         ]
         st.session_state['plugin_map'] = {
             action.name: action
