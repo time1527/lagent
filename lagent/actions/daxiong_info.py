@@ -6,12 +6,11 @@ from lagent.actions.parser import BaseParser, JsonParser
 from lagent.schema import ActionReturn
 from pprint import pprint
 
-from langchain.document_loaders import TextLoader
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
-from langchain_community.llms import QianfanLLMEndpoint
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.chat_models import ChatOpenAI
+from langchain.text_splitter import MarkdownHeaderTextSplitter
+from langchain_core.documents import Document
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..')))
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..'))
@@ -43,33 +42,44 @@ class DaXiongINFO(BaseAction):
         Returns:
              ActionReturn: 使用这个工具去回答大雄的相关问题
         """
+        md_path = os.path.join(repo_path,"/data/character/content/daxiong.md")
+        print(md_path)
+        # with open(md_path, encoding='utf8') as f:
+        #     text = f.read()
 
-        loader = TextLoader(os.path.join(repo_path)+"/data/character/content/daxiong.txt")
-        documents = loader.load()
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        docs = text_splitter.split_documents(documents)
-        # print(docs[0].page_content)
-        embedding = HuggingFaceEmbeddings(model_name="/root/share/new_models/maidalun1020/bce-embedding-base_v1")
-        vectorstore = FAISS.from_documents(documents=docs,embedding=embedding)
-        content = vectorstore.similarity_search(query=query, k=3)
+        # head_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=[
+        #     ('#', 'Header 1'),
+        #     ('##', 'Header 2'),
+        #     ('###', 'Header 3'),
+        # ], strip_headers=True)
+        # docs = head_splitter.split_text(text)
+        # loader = TextLoader()
+        # documents = loader.load()
+        # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        # docs = text_splitter.split_documents(documents)
+        # # print(docs[0].page_content)
+        # embedding = HuggingFaceEmbeddings(model_name="/root/share/new_models/maidalun1020/bce-embedding-base_v1")
+        # vectorstore = FAISS.from_documents(documents=docs,embedding=embedding)
+        # content = vectorstore.similarity_search(query=query, k=3)
 
-        prompt = f"""
-        你是非常了解哆啦A梦这部动画片的专家,请你根据下列知识库的内容来回答问题,
-        如果无法从中得到答案,请说"抱歉，我暂时不知道如何解答该问题"，不允许在答案中添加编造成分
+        # prompt = f"""
+        # 你是非常了解哆啦A梦这部动画片的专家,请你根据下列知识库的内容来回答问题,
+        # 如果无法从中得到答案,请说"抱歉，我暂时不知道如何解答该问题"，不允许在答案中添加编造成分
 
-        以下是知识库:
-        {docs[0].page_content}
-        以上是知识库;
+        # 以下是知识库:
+        # {docs[0].page_content}
+        # 以上是知识库;
 
-        用户问题:
-        {query}
-        """
-        print("prompt",prompt)
+        # 用户问题:
+        # {query}
+        # """
+        # print("prompt",prompt)
 
-        response = self.llm.invoke(prompt)
-        print("response",response.content)
-        tool_return = ActionReturn(type=self.name)
-        tool_return.result = [dict(type='text', content=str(response.content))]
+        # response = self.llm.invoke(prompt)
+        # print("response",response.content)
+        # tool_return = ActionReturn(type=self.name)
+        # tool_return.result = [dict(type='text', content=str(response.content))]
+
         return tool_return
 
 
