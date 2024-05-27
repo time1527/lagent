@@ -17,13 +17,14 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.chat_models import ChatOpenAI
 from langchain.text_splitter import MarkdownHeaderTextSplitter
 from langchain_core.documents import Document
+from BCEmbedding import RerankerModel
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..')))
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..'))
 openai_api_base = "http://localhost:23333/v1"
 openai_api_key = "none"
 
-class DaXiongINFO(BaseAction):
+class DoraemonRag(BaseAction):
     def __init__(self,
                  description: Optional[dict] = None,
                  parser: Type[BaseParser] = JsonParser,
@@ -34,21 +35,20 @@ class DaXiongINFO(BaseAction):
             openai_api_base=openai_api_base,
             openai_api_key=openai_api_key,
         )
-        # self.embedding = HuggingFaceEmbeddings(model_name="/rott/share/new_models/maidalun1020/bce-embedding-base_v1")
-        # self.vertorstore = FAISS.from_documents(document='',embedding=self.embedding)
 
     @tool_api
     def run(self,query:str) -> ActionReturn:
         """
-        一个可以查阅大雄相关资料的API。当用户询问的是关于大雄的相关问题时可以使用这个工具。
-        
+        这是一个可以查阅大雄、哆啦A梦、哆啦美、静香、胖虎、小夫等相关人物资料的API,
+        当用户询问上述相关人物的问题时，可以使用这个工具,
+       
         Args:
-            query (:class:`str`): 关于大雄的问题
+            query (:class:`str`): 关于大雄、哆啦A梦、哆啦美、静香、胖虎、小夫等相关人物的问题
 
         Returns:
-             ActionReturn: 使用这个工具去回答大雄的相关问题
+             ActionReturn: 使用这个工具去回答大雄、哆啦A梦、哆啦美、静香、胖虎、小夫等相关人物的问题
         """
-        md_path = os.path.join(repo_path,"data/character/content/daxiong.md")
+        md_path = os.path.join(repo_path,"data/character/content/all_people_info.md")
         with open(md_path, encoding='utf8') as f:
             text = f.read()
 
@@ -82,19 +82,26 @@ class DaXiongINFO(BaseAction):
             documents.append(new_doc)
 
         embedding = HuggingFaceEmbeddings(model_name="/root/share/new_models/maidalun1020/bce-embedding-base_v1")
+        rerankModel = RerankerModel(model_name_or_path="/root/share/new_models/maidalun1020/bce-reranker-base_v1")
         vectorstore = FAISS.from_documents(documents=documents,embedding=embedding)
-        content = vectorstore.similarity_search(query=query, k=3)
+        docs = vectorstore.similarity_search(query=query, k=3)
+        passages = []
+        for doc in docs:
+            passages.append(doc.page_content)
+        rerank_results = rerankModel.rerank(query=query, passages=passages)
+
         prompt = f"""
-        你是非常了解哆啦A梦这部动画片的专家,请你根据下列知识库的内容来回答问题,
+        你是非常了解哆啦A梦这部动画片的专家,请你以哆啦A梦为视角,根据下列知识库的内容使用第一人称来回答问题,
         如果无法从中得到答案,请说"抱歉，我暂时不知道如何解答该问题"，不允许在答案中添加编造成分
 
         以下是知识库:
-        {content[0].page_content}
+        {rerank_results["rerank_passages"]}
         以上是知识库;
 
         用户问题:
         {query}
         """
+        pprint(prompt)
         response = self.llm.invoke(prompt)
         tool_return = ActionReturn(type=self.name)
         tool_return.result = [dict(type='text', content=str(response.content))]
@@ -103,6 +110,6 @@ class DaXiongINFO(BaseAction):
 
 
 if __name__ == '__main__':
-    tool = DaXiongINFO()
+    tool = DoraemonRag()
     pprint(tool.run("大雄喜欢什么"))
     pprint(tool.run("他有哪些朋友"))
