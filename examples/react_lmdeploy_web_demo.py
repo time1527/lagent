@@ -16,10 +16,8 @@ from lagent.agents.react import CALL_PROTOCOL_CN,FORCE_STOP_PROMPT_CN,ReAct, ReA
 from lagent.llms.lmdepoly_wrapper import LMDeployClient
 from lagent.llms.meta_template import INTERNLM2_META as META
 from lagent.schema import AgentStatusCode
-from lagent.actions.daxiong_info import DaXiongINFO
 # from streamlit.logger import get_logger
-
-
+# 在此处添加对actions的导入
 
 class SessionState:
 
@@ -30,7 +28,6 @@ class SessionState:
 
         action_list = [
             ArxivSearch(),
-            DaXiongINFO()
             # 在此处添加tools/actions
         ]
         st.session_state['plugin_map'] = {
@@ -198,7 +195,7 @@ class StreamlitUI:
                 # image_path = action.result['image']
                 for image_path in action.result['image']:
                     image_data = open(image_path, 'rb').read()
-                    st.image(image_data, caption='Generated Image')
+                    st.image(image_data)
             if 'video' in action.result:
                 video_data = action.result['video']
                 video_data = open(video_data, 'rb').read()
@@ -213,7 +210,7 @@ class StreamlitUI:
                     st.markdown('```\n' + item['content'] + '\n```')
                 elif item['type'] == 'image':
                     image_data = open(item['content'], 'rb').read()
-                    st.image(image_data, caption='Generated Image')
+                    st.image(image_data)
                 elif item['type'] == 'video':
                     video_data = open(item['content'], 'rb').read()
                     st.video(video_data)

@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from lagent.schema import ActionReturn, ActionValidCode
 from .base_action import BaseAction
 from .builtin_actions import FinishAction, InvalidAction, NoAction
-
+import json5
 
 class ActionExecutor:
     """The action executor class.
@@ -83,6 +83,31 @@ class ActionExecutor:
             else:
                 action_return = self.invalid_action(command)
         else:
+            # self.actions[action_name]:
+            # {'name': 'DaXiongINFO', 'description': '一个可以查阅大雄相关资料的API。当用户询问的是关于大雄的相关问题时可以使用这个工具。', 'parameters': [{'name': 'query', 'type': 'STRING', 'description': '关于大雄的问题'}], 'required': ['query'], 'parameter_description': 'If you call this tool, you must pass arguments in the JSON format {key: value}, where the key is the parameter name.'}
+            # command  type(command):
+            # {'query': '大雄喜欢什么'} <class 'str'>
+            # {'query': '大雄喜欢什么中学符'} <class 'dict'>
+            
+            # 对command str进行处理，将其变成dict形式
+            action_input = command
+            if (isinstance(action_input,str) and action_name != "FinishAction"):
+                # Step 1: Replace escaped single quotes with single quotes
+                step1 = action_input.replace("\\'", "'")
+                
+                # Step 2: Replace escaped double quotes with double quotes
+                step2 = step1.replace('\\"', '"')
+                
+                # Step 3: Replace double backslashes with single backslashes
+                step3 = step2.replace('\\\\', '\\')
+                
+                # Step 4: Try to parse the cleaned string into a dictionary
+                try:
+                    command = json5.loads(step3)
+                except Exception:
+                    # If parsing fails, set command to the original input string
+                    command = action_input
+
             action_return = self.actions[action_name](command, api_name)
             action_return.valid = ActionValidCode.OPEN
         return action_return
