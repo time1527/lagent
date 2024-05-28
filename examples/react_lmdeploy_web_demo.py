@@ -18,6 +18,20 @@ from lagent.llms.meta_template import INTERNLM2_META as META
 from lagent.schema import AgentStatusCode
 # from streamlit.logger import get_logger
 # 在此处添加对actions的导入
+# 动漫道具
+from lagent.actions.anywhere_door import AnywhereDoor
+from lagent.actions.bamboo_copter import BambooCopter
+from lagent.actions.larger_light import LargerLight
+from lagent.actions.memory_bread import MemoryBread
+from lagent.actions.smaller_light import SmallerLight
+from lagent.actions.time_machine import TimeMachine
+# 现代道具
+from lagent.actions.github_trend import GithubTrending
+from lagent.actions.llm_ranker import LLMRanker
+from lagent.actions.rm_image_background import RemoveImageBackground
+# RAG道具
+from lagent.actions.doraemon_rag_old import DoraemonRag
+
 
 class SessionState:
 
@@ -26,10 +40,24 @@ class SessionState:
         st.session_state['assistant'] = []
         st.session_state['user'] = []
 
+        # 在此处添加tools/actions
         action_list = [
             ArxivSearch(),
-            # 在此处添加tools/actions
+            # 动漫道具
+            AnywhereDoor(),
+            BambooCopter(),
+            LargerLight(),
+            MemoryBread(),
+            SmallerLight(),
+            TimeMachine(),
+            # 现代道具
+            GithubTrending(),
+            LLMRanker(),
+            RemoveImageBackground(),
+            # RAG道具
+            DoraemonRag(),
         ]
+        
         st.session_state['plugin_map'] = {
             action.name: action
             for action in action_list
@@ -148,7 +176,7 @@ class StreamlitUI:
             llm=model,
             action_executor=None,
             protocol=ReActProtocol(call_protocol=CALL_PROTOCOL_CN,force_stop=FORCE_STOP_PROMPT_CN),
-            max_turn=2)
+            max_turn=5)
 
     def render_user(self, prompt: str):
         with st.chat_message('user'):
