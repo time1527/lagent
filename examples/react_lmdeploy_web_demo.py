@@ -16,6 +16,11 @@ from lagent.agents.react import CALL_PROTOCOL_CN,FORCE_STOP_PROMPT_CN,ReAct, ReA
 from lagent.llms.lmdepoly_wrapper import LMDeployClient
 from lagent.llms.meta_template import INTERNLM2_META as META
 from lagent.schema import AgentStatusCode
+from lagent.actions.doraemon_rag import DoraemonRag
+from lagent.actions.github_trend import GithubTrending
+from lagent.actions.llm_ranker import LLMRanker
+from lagent.actions.rm_image_background import RemoveImageBackground
+
 # from streamlit.logger import get_logger
 # 在此处添加对actions的导入
 
@@ -27,7 +32,10 @@ class SessionState:
         st.session_state['user'] = []
 
         action_list = [
-            ArxivSearch(),
+            DoraemonRag(),
+            GithubTrending(),
+            LLMRanker(),
+            RemoveImageBackground()
             # 在此处添加tools/actions
         ]
         st.session_state['plugin_map'] = {
