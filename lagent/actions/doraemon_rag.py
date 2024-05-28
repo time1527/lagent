@@ -3,6 +3,7 @@
 # pip install sentence-transformers
 # pip install faiss-gpu
 # pip install openai==0.28.1
+# pip install BCEmbedding
 
 import os
 import sys
@@ -11,6 +12,7 @@ from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
 from lagent.schema import ActionReturn,ActionStatusCode
 from pprint import pprint
+import yaml 
 
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -21,8 +23,10 @@ from BCEmbedding import RerankerModel
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..')))
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..', '..'))
-openai_api_base = "http://localhost:23333/v1"
-openai_api_key = "none"
+
+with open(os.path.join(repo_path,"config.yml"), 'r', encoding='utf-8') as f:
+    configs = yaml.load(f.read(), Loader=yaml.FullLoader)
+
 
 class DoraemonRag(BaseAction):
     def __init__(self,
@@ -31,9 +35,9 @@ class DoraemonRag(BaseAction):
                  enable: bool = True):
         super().__init__(description, parser, enable)
         self.llm = ChatOpenAI(
-            model_name="internlm2-chat-7b",
-            openai_api_base=openai_api_base,
-            openai_api_key=openai_api_key,
+            model_name=configs['llm_name'],
+            openai_api_base=configs['llm_api_path'],
+            openai_api_key="none",
         )
 
     @tool_api
@@ -81,10 +85,10 @@ class DoraemonRag(BaseAction):
             })
             documents.append(new_doc)
 
-        embedding = HuggingFaceEmbeddings(model_name="/root/share/new_models/maidalun1020/bce-embedding-base_v1")
-        rerankModel = RerankerModel(model_name_or_path="/root/share/new_models/maidalun1020/bce-reranker-base_v1")
+        embedding = HuggingFaceEmbeddings(model_name=configs['embedding_model_path'])
+        rerankModel = RerankerModel(model_name_or_path=configs['rerank_model_path'])
         vectorstore = FAISS.from_documents(documents=documents,embedding=embedding)
-        docs = vectorstore.similarity_search(query=query, k=3)
+        docs = vectorstore.similarity_search(query=query, k=5)
         passages = []
         for doc in docs:
             passages.append(doc.page_content)
@@ -95,7 +99,11 @@ class DoraemonRag(BaseAction):
         如果无法从中得到答案,请说"抱歉，我暂时不知道如何解答该问题"，不允许在答案中添加编造成分
 
         以下是知识库:
-        {rerank_results["rerank_passages"]}
+        片段1:
+        {rerank_results["rerank_passages"][0]}
+
+        片段2:
+        {rerank_results["rerank_passages"][1]}
         以上是知识库;
 
         用户问题:
