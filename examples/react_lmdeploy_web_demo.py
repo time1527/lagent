@@ -148,7 +148,7 @@ class StreamlitUI:
             llm=model,
             action_executor=None,
             protocol=ReActProtocol(call_protocol=CALL_PROTOCOL_CN,force_stop=FORCE_STOP_PROMPT_CN),
-            max_turn=7)
+            max_turn=2)
 
     def render_user(self, prompt: str):
         with st.chat_message('user'):
@@ -157,7 +157,8 @@ class StreamlitUI:
     def render_assistant(self, agent_return):
         with st.chat_message('assistant'):
             for action in agent_return.actions:
-                if (action) and (action.type != 'FinishAction'):
+                # if (action) and (action.type != 'FinishAction'):
+                if (action) and (action.type not in ['FinishAction','NoAction']):
                     self.render_action(action)
             st.markdown(agent_return.response)
 
@@ -180,6 +181,8 @@ class StreamlitUI:
         if action.type == 'IPythonInterpreter':
             self.render_interpreter_args(action)
         elif action.type == 'FinishAction':
+            pass
+        elif action.type == 'NoAction':
             pass
         else:
             self.render_plugin_args(action)
