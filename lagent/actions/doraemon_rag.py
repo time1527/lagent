@@ -1,17 +1,10 @@
-
-# pip install langchain==0.1.11
-# pip install sentence-transformers
-# pip install faiss-gpu
-# pip install openai==0.28.1
-# pip install BCEmbedding
-
 import os
 import sys
 from typing import Optional, Type
 from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
 from lagent.schema import ActionReturn,ActionStatusCode
-from pprint import pprint
+# from pprint import pprint
 import yaml 
 
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
@@ -44,7 +37,7 @@ class DoraemonRag(BaseAction):
     def run(self,query:str) -> ActionReturn:
         """
         这是一个可以查阅大雄、哆啦A梦、哆啦美、静香、胖虎、小夫等相关人物资料的API,
-        当用户询问上述相关人物的问题时，可以使用这个工具,
+        当用户询问上述相关人物的问题时，可以使用这个工具。
        
         Args:
             query (:class:`str`): 关于大雄、哆啦A梦、哆啦美、静香、胖虎、小夫等相关人物的问题
@@ -109,7 +102,7 @@ class DoraemonRag(BaseAction):
         用户问题:
         {query}
         """
-        pprint(prompt)
+        # pprint(prompt)
         response = self.llm.invoke(prompt)
         tool_return = ActionReturn(type=self.name)
         tool_return.result = [dict(type='text', content=str(response.content))]

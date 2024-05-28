@@ -1,4 +1,3 @@
-# pip install rembg
 import os
 import sys
 from rembg import remove

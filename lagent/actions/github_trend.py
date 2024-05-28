@@ -1,5 +1,3 @@
-# pip install aiohttp
-# pip install asyncio
 # learn from: https://deepwisdom.feishu.cn/wiki/KhCcweQKmijXi6kDwnicM0qpnEf
 import os
 import re

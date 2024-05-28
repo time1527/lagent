@@ -1,6 +1,3 @@
-# pip install playwright
-# playwright install
-# playwright install-deps
 import os
 import sys
 from datetime import datetime
@@ -49,6 +46,7 @@ class LLMRanker(BaseAction):
         try:
             browser = playwright.chromium.launch()
             page = browser.new_page()
+            
             # 没有wait_until = "networkidle"会白屏
             page.goto(self.url,wait_until = "networkidle")
 
