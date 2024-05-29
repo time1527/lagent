@@ -15,7 +15,6 @@ repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','
 from lagent.actions.base_action import BaseAction, tool_api
 from lagent.actions.parser import BaseParser, JsonParser
 from lagent.schema import ActionReturn, ActionStatusCode
-from pprint import pprint
 
 
 class MagicMaker(BaseAction):
@@ -31,7 +30,7 @@ class MagicMaker(BaseAction):
         '2:3', '3:4', '9:16'
     ]
 
-    def __init__(self, style='guofeng', aspect_ratio='4:3'):
+    def __init__(self, style='xieshi', aspect_ratio='4:3'):
         super().__init__()
         if style in self.styles_option:
             self.style = style

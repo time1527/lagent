@@ -29,8 +29,9 @@ from lagent.actions.time_machine import TimeMachine
 from lagent.actions.github_trend import GithubTrending
 from lagent.actions.llm_ranker import LLMRanker
 from lagent.actions.rm_image_background import RemoveImageBackground
+from lagent.actions.magic_maker import MagicMaker
 # RAG道具
-from lagent.actions.doraemon_rag_old import DoraemonRag
+from lagent.actions.doraemon_rag import DoraemonRag
 
 
 class SessionState:
@@ -54,6 +55,7 @@ class SessionState:
             GithubTrending(),
             LLMRanker(),
             RemoveImageBackground(),
+            MagicMaker(),
             # RAG道具
             DoraemonRag(),
         ]
