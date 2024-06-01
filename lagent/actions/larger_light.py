@@ -37,11 +37,12 @@ class LargerLight(BaseAction):
     def run(self,object:str) -> ActionReturn:
         """
         一个可以使用放大灯用来放大物体的体积与重量的API。当用户想要放大某个物体的体积与重量的时候可以使用这个工具。
+        
         Args:
-            object(:class:`str`): the object that you want to enlarge
+            object (:class:`str`): 想要放大的物体
             
         Returns:
-             ActionReturn: the tool to magnify object
+             ActionReturn: the tool to larger object
         """
         tool_return = ActionReturn(type=self.name)
         # data_list = [f"{MAP[key]}: {value}" for key, value in self.data.items() if key not in ["image_path","reference"] and value]

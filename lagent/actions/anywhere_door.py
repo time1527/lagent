@@ -38,8 +38,9 @@ class AnywhereDoor(BaseAction):
     def run(self,destination:str) -> ActionReturn:
         """
         一个可以使用任意们进行目的地跨越的API。当用户想要进行瞬间移动到一个地方的时候可以使用这个工具。
+        
         Args:
-            destination (:class:`str`): destination that want to go 
+            destination (:class:`str`): 想要到达的地方
             
         Returns:
              ActionReturn: the tool to teleport to destination

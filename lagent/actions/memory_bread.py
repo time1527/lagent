@@ -40,6 +40,7 @@ class MemoryBread(BaseAction):
         
         Args:
             scene (:class:`str`): the scene of improve memory.
+            
         Returns:
              ActionReturn: the tool to improve memory
         """
@@ -52,3 +53,19 @@ class MemoryBread(BaseAction):
                               dict(type='image', content=str(os.path.join(repo_path,self.data["image_path"])))]
         tool_return.state = ActionStatusCode.SUCCESS
         return tool_return
+
+    # def run(self) -> ActionReturn:
+    #     """一个可以使用记忆面包提升记忆力的API。当用户需要提升记忆力的时候可以使用这个工具。
+        
+    #     Returns:
+    #          ActionReturn: the tool to improve memory
+    #     """
+    #     tool_return = ActionReturn(type=self.name)
+    #     # data_list = [f"{MAP[key]}: {value}" for key, value in self.data.items() if key not in ["image_path","reference"] and value]
+    #     # tool_return.result = [dict(type='text', content=str('\n'.join(data_list))),
+    #     #                 dict(type='image', content=str(os.path.join(repo_path,self.data["image_path"])))]
+    #     data = f"""{MAP["use"]}: {self.data["use"]}"""
+    #     tool_return.result = [dict(type='text', content=str(data)),
+    #                           dict(type='image', content=str(os.path.join(repo_path,self.data["image_path"])))]
+    #     tool_return.state = ActionStatusCode.SUCCESS
+    #     return tool_return

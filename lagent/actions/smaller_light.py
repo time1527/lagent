@@ -37,8 +37,9 @@ class SmallerLight(BaseAction):
     def run(self,object:str) -> ActionReturn:
         """
         一个可以使用缩小灯用来缩小物体的体积与重量的API。当用户想要缩小某个物体的体积与重量的时候可以使用这个工具。
+        
         Args:
-            object(:class:`str`): the object that you want to shrink
+            object (:class:`str`): 想要缩小的物体
             
         Returns:
              ActionReturn: the tool to shrink object
